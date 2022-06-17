@@ -1,4 +1,4 @@
-# API QRCode v1
+# API QRCode V1
 
 API desenvolvida em Python para criação de QRCode à partir de uma URL (string) encaminhada. Devolvendo um QRCode e também um Encurtador de URL.
 
