@@ -1,6 +1,6 @@
 import pyshorteners
 
 def encurtarURL(url):
-    s = pyshorteners.Shortener()    
-    shortUrl = s.tinyurl.short(url) 
-    return shortUrl
+    encurtador = pyshorteners.Shortener()    
+    urlCurta = encurtador.tinyurl.short(url) 
+    return urlCurta
