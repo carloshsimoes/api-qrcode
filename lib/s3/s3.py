@@ -33,9 +33,11 @@ def enviarQRcode(obj):
 def criarUrlAssinada(obj_nome, bucket, tempoExp=3600):
     try:
         resposta = s3.generate_presigned_url('get_object',
-                                                    Params={'Bucket': bucket,
-                                                            'Key': obj_nome},
-                                                    ExpiresIn=tempoExp)
+                                              Params = {
+                                                'Bucket': bucket,
+                                                'Key': obj_nome
+                                              },
+                                              ExpiresIn=tempoExp)
     except ClientError as e:
         logging.error(e)
         return None

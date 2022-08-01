@@ -1,62 +1,28 @@
-import lib.qrcode
-import lib.shorturl
-import lib.s3
+from flask import Flask, Response
+import json
 
-from flask import Flask, request
+from qrcode.blueprint import qrcode_routes
+from healthcheck.blueprint import healthcheck_routes
+
 app = Flask(__name__)
 
-
-@app.route("/health-check", methods=["GET"])
-def healthcheck():
-    return {
-        'status': 'healthy'
-    }, 200
+app.register_blueprint(qrcode_routes)
+app.register_blueprint(healthcheck_routes)
 
 
-@app.route("/qrcode", methods=["GET"])
-def qrcode():
+@app.route("/", methods=["GET"])
+def index():
+    retorno = {
+        "app": "Sistema de geração de QRCode",
+        "version": 1.0
+    }
 
-    url = request.args.get('url')
-    exibirHtml = request.args.get('ishtml', 0)
+    return Response(
+        json.dumps(retorno),
+        200,
+        content_type="application/json"
+    )
 
-    validaUrlCurta = lambda: lib.shorturl.encurtarURL(url) if len(url) > 40 else url
-
-    if url is not None and len(url) > 3:
-
-        try:
-            lib.qrcode.gerarQRCode(validaUrlCurta(), r'qr.png')
-            s3_file_name = lib.s3.enviarQRcode(r'qr.png')
-
-            if exibirHtml == '1':
-                return f"""
-                <div align=center>
-                    <img src='{s3_file_name}' />
-                    <br />
-                    <a href="{validaUrlCurta()}">{validaUrlCurta()}</a>
-                </div>
-                """, 200
-
-            else:
-                return {
-                    'qrcode': s3_file_name,
-                    'url': url,
-                    'shorturl': validaUrlCurta()
-                }, 200
-
-        except:
-            return {
-                'error': 'error generating objects'
-            }, 400
-
-    else:
-
-        return {
-            'error:': 'bad request',
-            'url': [{
-                'required': True,
-                'lenght': '> 3'
-            }]
-        }, 400
 
 
 if __name__ == '__main__':
